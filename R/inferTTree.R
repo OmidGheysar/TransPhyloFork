@@ -37,6 +37,7 @@ inferTTree = function(ptree, w.shape=2, w.scale=1, ws.shape=NA, ws.scale=NA,
                       thinning=1, startNeg=100/365, startOff.r=1, startOff.p=0.5, startPi=0.5, updateNeg=TRUE,
                       updateOff.r=TRUE, updateOff.p=FALSE, updatePi=TRUE, qNeg=NA, qOff.r=NA, qOff.p=NA, qPi=NA, 
                       startCTree=NA, updateTTree=TRUE, optiStart=2, dateT=Inf,delta_t=NA,verbose=F) {
+  print('Omid Fork Version of TransPhylo!')
 
   ptree$ptree[,1]=ptree$ptree[,1]+runif(nrow(ptree$ptree))*1e-10#Ensure that all leaves have unique times
   if (dateT<dateLastSample(ptree)) stop('The parameter dateT cannot be smaller than the date of last sample')
