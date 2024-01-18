@@ -31,8 +31,32 @@ log_sum_exp_vec <- function(w) {
     .Call('_TransPhylo_log_sum_exp_vec', PACKAGE = 'TransPhylo', w)
 }
 
-wbar <- function(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t) {
-    .Call('_TransPhylo_wbar', PACKAGE = 'TransPhylo', tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t)
+cutPi <- function(pi, initialDate, infectionDate, delta, n) {
+    .Call('_TransPhylo_cutPi', PACKAGE = 'TransPhylo', pi, initialDate, infectionDate, delta, n)
+}
+
+roundToPrecision <- function(value, precision) {
+    .Call('_TransPhylo_roundToPrecision', PACKAGE = 'TransPhylo', value, precision)
+}
+
+step_function_3 <- function(x, threshold1, threshold2, value1, value2, value3) {
+    .Call('_TransPhylo_step_function_3', PACKAGE = 'TransPhylo', x, threshold1, threshold2, value1, value2, value3)
+}
+
+Dgamma <- function(calendar_time, shape, scale, tinf) {
+    .Call('_TransPhylo_Dgamma', PACKAGE = 'TransPhylo', calendar_time, shape, scale, tinf)
+}
+
+integral_function <- function(calendar_time, tinf, shape, scale, value1, value2, value3, threshold1, threshold2) {
+    .Call('_TransPhylo_integral_function', PACKAGE = 'TransPhylo', calendar_time, tinf, shape, scale, value1, value2, value3, threshold1, threshold2)
+}
+
+integral_values_cpp <- function(calendar_time, tinf, shape, scale, value1, value2, value3, threshold1, threshold2) {
+    .Call('_TransPhylo_integral_values_cpp', PACKAGE = 'TransPhylo', calendar_time, tinf, shape, scale, value1, value2, value3, threshold1, threshold2)
+}
+
+wbar <- function(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, Pi, dateInitial) {
+    .Call('_TransPhylo_wbar', PACKAGE = 'TransPhylo', tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, Pi, dateInitial)
 }
 
 #' Calculates the log-probability of a transmission tree
@@ -41,14 +65,13 @@ wbar <- function(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_
 #' @param pOff Second parameter of the negative binomial distribution for offspring number
 #' @param pi probability of sampling an infected individual
 #' @param shGen Shape parameter of the Gamma probability density function representing the generation time
-#' @param scGen Scale parameter of the Gamma probability density function representing the generation time 
+#' @param scGen Scale parameter of the Gamma probability density function representing the generation time
 #' @param shSam Shape parameter of the Gamma probability density function representing the sampling time
-#' @param scSam Scale parameter of the Gamma probability density function representing the sampling time 
+#' @param scSam Scale parameter of the Gamma probability density function representing the sampling time
 #' @param dateT Date when process stops (this can be Inf for fully simulated outbreaks)
 #' @param delta_t Grid precision
 #' @return Probability of the transmission tree
 #' @export
-probTTree <- function(ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t = 0.01) {
-    .Call('_TransPhylo_probTTree', PACKAGE = 'TransPhylo', ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t)
+probTTree <- function(ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t = 0.01, isTp = 0L, Pi = as.numeric( c(0.5)), dateInitial = 0) {
+    .Call('_TransPhylo_probTTree', PACKAGE = 'TransPhylo', ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t, isTp, Pi, dateInitial)
 }
-
