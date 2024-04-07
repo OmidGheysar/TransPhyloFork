@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-/*
+/* example change
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
 #include <boost/math/tools/roots.hpp>
