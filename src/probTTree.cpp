@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-/* example change
+/*
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
 #include <boost/math/tools/roots.hpp>
@@ -242,7 +242,7 @@ NumericVector integral_values_cpp(NumericVector calendar_time, NumericVector tin
 // end of my code to Tp ----------------------------------------------------------------------------------
 
 // [[Rcpp::export]]
-NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double pi, double shGen, double scGen, double shSam, double scSam, double delta_t, int isTp, NumericVector Pi, double dateInitial)
+NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double pi, double shGen, double scGen, double shSam, double scSam, double delta_t, int isTp, NumericVector time_data, NumericVector prob_data, double dateInitial)
 {
   int n = std::round((dateT-tinf)/delta_t);
   NumericVector grid(n);
@@ -283,26 +283,30 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
   //   }
     
     if (isTp == 0) {
-      double value1 = Pi[0];
-      double value2 = Pi[1];
-      double value3 = Pi[2];
+      double value1 = time_data[0];
+      double value2 = time_data[1];
+      double value3 = time_data[2];
       double threshold1 =  2005.2;
       double threshold2 =  2006;
-      for (int i = 0; i < n; ++i) {
-        double g_value = grid[i]; // Replace with the actual calculation of g[i]
-        // Rprintf("pi2[120]: %f\n", grid[i]);
-        
-        if (g_value <= threshold1) {
-          pi2[i] = value1;
-          Rprintf("pi2: %f\n", value1);
-        } else if (g_value > threshold1 && g_value <= threshold2) {
-          pi2[i] = value2;
-          Rprintf("pi2: %f\n", value2);
-        } else {
-          pi2[i] = value3;
-          Rprintf("pi2: %f\n", value3);
-        }
-      }
+      // Rprintf("dateT: %f\n", dateT);
+      Rprintf("tinf: %f\n", tinf);
+      // for (int i = 0; i < n; ++i) {
+      //   double g_value = grid[i]; // Replace with the actual calculation of g[i]
+      //    // Rprintf("grid: %f\n", grid[i]);
+      //    // Rprintf("dateT: %f\n", dateT);
+      //    // Rprintf("tinf: %f\n", tinf);
+      //   
+      //   if (g_value <= threshold1) {
+      //     pi2[i] = value1;
+      //     //Rprintf("pi2: %f\n", value1);
+      //   } else if (g_value > threshold1 && g_value <= threshold2) {
+      //     pi2[i] = value2;
+      //     //Rprintf("pi2: %f\n", value2);
+      //   } else {
+      //     pi2[i] = value3;
+      //     //Rprintf("pi2: %f\n", value3);
+      //   }
+      // }
     }
     
     // for(int i=0; i<n; ++i)
@@ -323,51 +327,37 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
     // Rprintf("dateT-tinf: %f\n",  std::round((dateT-tinf)/delta_t));
   
   if(isTp==2){
-    double value1 = Pi[0];
-    double value2 = Pi[1];
-    double value3 = Pi[2];
-    double threshold1 =  Pi[3];
-    double threshold2 =  Pi[4];
+    // double value1 = time_data[0];
+    // double value2 = time_data[1];
+    // double value3 = time_data[2];
+    // double threshold1 =  time_data[3];
+    // double threshold2 =  time_data[4];
     for (int i = 0; i < n; ++i) {
       double g_value = grid[i]; // Replace with the actual calculation of g[i]
-      // Rprintf("pi2[120]: %f\n", grid[i]);
+      Rprintf("grid[i]: %f\n", grid[i]);
       
-      if (g_value <= threshold1) {
-        pi2[i] = value1;
-        // Rprintf("pi2: %f\n", value1);
-      } else if (g_value > threshold1 && g_value <= threshold2) {
-        pi2[i] = value2;
-        // Rprintf("pi2: %f\n", value2);
-      } else {
-        pi2[i] = value3;
-        // Rprintf("pi2: %f\n", value3);
-      }
+      // if (g_value <= threshold1) {
+      //   pi2[i] = value1;
+      //   // Rprintf("pi2: %f\n", value1);
+      // } else if (g_value > threshold1 && g_value <= threshold2) {
+      //   pi2[i] = value2;
+      //   // Rprintf("pi2: %f\n", value2);
+      // } else {
+      //   pi2[i] = value3;
+      //   // Rprintf("pi2: %f\n", value3);
+      // }
     }
     
   }
   
   if(isTp==3){
-    double value1 = 0.01;
-    double value2 = 0.01;
-    double value3 = 0.9;
-    double threshold1 =  2000.00;
-    double threshold2 =  2000.50;
-    for (int i = 0; i < n; ++i) {
-      double g_value = grid[i]; // Replace with the actual calculation of g[i]
-      // Rprintf("pi2[120]: %f\n", grid[i]);
-      
-      if (g_value <= threshold1) {
-        pi2[i] = value1;
-        // Rprintf("pi2: %f\n", value1);
-      } else if (g_value > threshold1 && g_value <= threshold2) {
-        pi2[i] = value2;
-        // Rprintf("pi2: %f\n", value2);
-      } else {
-        pi2[i] = value3;
-        // Rprintf("pi2: %f\n", value3);
-      }
-    }
+    Rprintf("time_data[0]: %f\n", time_data[0]);
+    Rprintf("time_data[1]: %f\n", time_data[1]);
+    Rprintf("time_data[2]: %f\n", time_data[2]);
     
+    Rprintf("prob_data[0]: %f\n", prob_data[0]);
+    Rprintf("prob_data[1]: %f\n", prob_data[1]);
+    Rprintf("prob_data[2]: %f\n", prob_data[2]);
   }
 // end of my code to Tp -----------------------------------------------------------------------------------
 
@@ -407,7 +397,7 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
 // [[Rcpp::export]]
 double probTTree(NumericMatrix ttree, double rOff, double pOff, double pi,
                  double shGen, double scGen, double shSam, double scSam,
-                 double dateT, double delta_t=0.01, int isTp = 0, NumericVector Pi = NumericVector::create(0.5), double dateInitial = 0){
+                 double dateT, double delta_t=0.01, int isTp = 0, NumericVector time_data = NumericVector::create(0.5), NumericVector prob_data = NumericVector::create(0.5), double dateInitial = 0){
   // Rprintf("Pi for Tp: %f\n", Pi[0]);
   int numCases = ttree.nrow();
 
@@ -454,7 +444,7 @@ double probTTree(NumericMatrix ttree, double rOff, double pOff, double pi,
     double accum = 0.0;
     double tinfmin = min(ttree(_,0));
     tinfmin = roundToPrecision(tinfmin, delta_t);
-    NumericVector wbar0 = wbar(tinfmin, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, Pi, dateInitial);
+    NumericVector wbar0 = wbar(tinfmin, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data, dateInitial);
 
     double gridStart = dateT-wbar0.size()*delta_t;
 

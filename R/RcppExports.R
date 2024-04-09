@@ -55,8 +55,8 @@ integral_values_cpp <- function(calendar_time, tinf, shape, scale, value1, value
     .Call('_TransPhylo_integral_values_cpp', PACKAGE = 'TransPhylo', calendar_time, tinf, shape, scale, value1, value2, value3, threshold1, threshold2)
 }
 
-wbar <- function(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, Pi, dateInitial) {
-    .Call('_TransPhylo_wbar', PACKAGE = 'TransPhylo', tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, Pi, dateInitial)
+wbar <- function(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data, dateInitial) {
+    .Call('_TransPhylo_wbar', PACKAGE = 'TransPhylo', tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data, dateInitial)
 }
 
 #' Calculates the log-probability of a transmission tree
@@ -72,6 +72,7 @@ wbar <- function(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_
 #' @param delta_t Grid precision
 #' @return Probability of the transmission tree
 #' @export
-probTTree <- function(ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t = 0.01, isTp = 0L, Pi = as.numeric( c(0.5)), dateInitial = 0) {
-    .Call('_TransPhylo_probTTree', PACKAGE = 'TransPhylo', ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t, isTp, Pi, dateInitial)
+probTTree <- function(ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t = 0.01, isTp = 0L, time_data = as.numeric( c(0.5)), prob_data = as.numeric( c(0.5)), dateInitial = 0) {
+    .Call('_TransPhylo_probTTree', PACKAGE = 'TransPhylo', ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t, isTp, time_data, prob_data, dateInitial)
 }
+

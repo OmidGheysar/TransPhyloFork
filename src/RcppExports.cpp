@@ -179,8 +179,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // wbar
-NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double pi, double shGen, double scGen, double shSam, double scSam, double delta_t, int isTp, NumericVector Pi, double dateInitial);
-RcppExport SEXP _TransPhylo_wbar(SEXP tinfSEXP, SEXP dateTSEXP, SEXP rOffSEXP, SEXP pOffSEXP, SEXP piSEXP, SEXP shGenSEXP, SEXP scGenSEXP, SEXP shSamSEXP, SEXP scSamSEXP, SEXP delta_tSEXP, SEXP isTpSEXP, SEXP PiSEXP, SEXP dateInitialSEXP) {
+NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double pi, double shGen, double scGen, double shSam, double scSam, double delta_t, int isTp, NumericVector time_data, NumericVector prob_data, double dateInitial);
+RcppExport SEXP _TransPhylo_wbar(SEXP tinfSEXP, SEXP dateTSEXP, SEXP rOffSEXP, SEXP pOffSEXP, SEXP piSEXP, SEXP shGenSEXP, SEXP scGenSEXP, SEXP shSamSEXP, SEXP scSamSEXP, SEXP delta_tSEXP, SEXP isTpSEXP, SEXP time_dataSEXP, SEXP prob_dataSEXP, SEXP dateInitialSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -195,15 +195,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type scSam(scSamSEXP);
     Rcpp::traits::input_parameter< double >::type delta_t(delta_tSEXP);
     Rcpp::traits::input_parameter< int >::type isTp(isTpSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type time_data(time_dataSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type prob_data(prob_dataSEXP);
     Rcpp::traits::input_parameter< double >::type dateInitial(dateInitialSEXP);
-    rcpp_result_gen = Rcpp::wrap(wbar(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, Pi, dateInitial));
+    rcpp_result_gen = Rcpp::wrap(wbar(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data, dateInitial));
     return rcpp_result_gen;
 END_RCPP
 }
 // probTTree
-double probTTree(NumericMatrix ttree, double rOff, double pOff, double pi, double shGen, double scGen, double shSam, double scSam, double dateT, double delta_t, int isTp, NumericVector Pi, double dateInitial);
-RcppExport SEXP _TransPhylo_probTTree(SEXP ttreeSEXP, SEXP rOffSEXP, SEXP pOffSEXP, SEXP piSEXP, SEXP shGenSEXP, SEXP scGenSEXP, SEXP shSamSEXP, SEXP scSamSEXP, SEXP dateTSEXP, SEXP delta_tSEXP, SEXP isTpSEXP, SEXP PiSEXP, SEXP dateInitialSEXP) {
+double probTTree(NumericMatrix ttree, double rOff, double pOff, double pi, double shGen, double scGen, double shSam, double scSam, double dateT, double delta_t, int isTp, NumericVector time_data, NumericVector prob_data, double dateInitial);
+RcppExport SEXP _TransPhylo_probTTree(SEXP ttreeSEXP, SEXP rOffSEXP, SEXP pOffSEXP, SEXP piSEXP, SEXP shGenSEXP, SEXP scGenSEXP, SEXP shSamSEXP, SEXP scSamSEXP, SEXP dateTSEXP, SEXP delta_tSEXP, SEXP isTpSEXP, SEXP time_dataSEXP, SEXP prob_dataSEXP, SEXP dateInitialSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -218,9 +219,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type dateT(dateTSEXP);
     Rcpp::traits::input_parameter< double >::type delta_t(delta_tSEXP);
     Rcpp::traits::input_parameter< int >::type isTp(isTpSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type Pi(PiSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type time_data(time_dataSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type prob_data(prob_dataSEXP);
     Rcpp::traits::input_parameter< double >::type dateInitial(dateInitialSEXP);
-    rcpp_result_gen = Rcpp::wrap(probTTree(ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t, isTp, Pi, dateInitial));
+    rcpp_result_gen = Rcpp::wrap(probTTree(ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t, isTp, time_data, prob_data, dateInitial));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -238,8 +240,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_TransPhylo_Dgamma", (DL_FUNC) &_TransPhylo_Dgamma, 4},
     {"_TransPhylo_integral_function", (DL_FUNC) &_TransPhylo_integral_function, 9},
     {"_TransPhylo_integral_values_cpp", (DL_FUNC) &_TransPhylo_integral_values_cpp, 9},
-    {"_TransPhylo_wbar", (DL_FUNC) &_TransPhylo_wbar, 13},
-    {"_TransPhylo_probTTree", (DL_FUNC) &_TransPhylo_probTTree, 13},
+    {"_TransPhylo_wbar", (DL_FUNC) &_TransPhylo_wbar, 14},
+    {"_TransPhylo_probTTree", (DL_FUNC) &_TransPhylo_probTTree, 14},
     {NULL, NULL, 0}
 };
 
