@@ -83,21 +83,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cutPi
-NumericVector cutPi(NumericVector pi, double initialDate, double infectionDate, double delta, int n);
-RcppExport SEXP _TransPhylo_cutPi(SEXP piSEXP, SEXP initialDateSEXP, SEXP infectionDateSEXP, SEXP deltaSEXP, SEXP nSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type pi(piSEXP);
-    Rcpp::traits::input_parameter< double >::type initialDate(initialDateSEXP);
-    Rcpp::traits::input_parameter< double >::type infectionDate(infectionDateSEXP);
-    Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(cutPi(pi, initialDate, infectionDate, delta, n));
-    return rcpp_result_gen;
-END_RCPP
-}
 // roundToPrecision
 double roundToPrecision(double value, double precision);
 RcppExport SEXP _TransPhylo_roundToPrecision(SEXP valueSEXP, SEXP precisionSEXP) {
@@ -107,74 +92,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type value(valueSEXP);
     Rcpp::traits::input_parameter< double >::type precision(precisionSEXP);
     rcpp_result_gen = Rcpp::wrap(roundToPrecision(value, precision));
-    return rcpp_result_gen;
-END_RCPP
-}
-// step_function_3
-double step_function_3(double x, double threshold1, double threshold2, double value1, double value2, double value3);
-RcppExport SEXP _TransPhylo_step_function_3(SEXP xSEXP, SEXP threshold1SEXP, SEXP threshold2SEXP, SEXP value1SEXP, SEXP value2SEXP, SEXP value3SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type threshold1(threshold1SEXP);
-    Rcpp::traits::input_parameter< double >::type threshold2(threshold2SEXP);
-    Rcpp::traits::input_parameter< double >::type value1(value1SEXP);
-    Rcpp::traits::input_parameter< double >::type value2(value2SEXP);
-    Rcpp::traits::input_parameter< double >::type value3(value3SEXP);
-    rcpp_result_gen = Rcpp::wrap(step_function_3(x, threshold1, threshold2, value1, value2, value3));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Dgamma
-double Dgamma(double calendar_time, double shape, double scale, double tinf);
-RcppExport SEXP _TransPhylo_Dgamma(SEXP calendar_timeSEXP, SEXP shapeSEXP, SEXP scaleSEXP, SEXP tinfSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type calendar_time(calendar_timeSEXP);
-    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
-    Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
-    Rcpp::traits::input_parameter< double >::type tinf(tinfSEXP);
-    rcpp_result_gen = Rcpp::wrap(Dgamma(calendar_time, shape, scale, tinf));
-    return rcpp_result_gen;
-END_RCPP
-}
-// integral_function
-double integral_function(NumericVector calendar_time, double tinf, double shape, double scale, double value1, double value2, double value3, double threshold1, double threshold2);
-RcppExport SEXP _TransPhylo_integral_function(SEXP calendar_timeSEXP, SEXP tinfSEXP, SEXP shapeSEXP, SEXP scaleSEXP, SEXP value1SEXP, SEXP value2SEXP, SEXP value3SEXP, SEXP threshold1SEXP, SEXP threshold2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type calendar_time(calendar_timeSEXP);
-    Rcpp::traits::input_parameter< double >::type tinf(tinfSEXP);
-    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
-    Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
-    Rcpp::traits::input_parameter< double >::type value1(value1SEXP);
-    Rcpp::traits::input_parameter< double >::type value2(value2SEXP);
-    Rcpp::traits::input_parameter< double >::type value3(value3SEXP);
-    Rcpp::traits::input_parameter< double >::type threshold1(threshold1SEXP);
-    Rcpp::traits::input_parameter< double >::type threshold2(threshold2SEXP);
-    rcpp_result_gen = Rcpp::wrap(integral_function(calendar_time, tinf, shape, scale, value1, value2, value3, threshold1, threshold2));
-    return rcpp_result_gen;
-END_RCPP
-}
-// integral_values_cpp
-NumericVector integral_values_cpp(NumericVector calendar_time, NumericVector tinf, double shape, double scale, double value1, double value2, double value3, double threshold1, double threshold2);
-RcppExport SEXP _TransPhylo_integral_values_cpp(SEXP calendar_timeSEXP, SEXP tinfSEXP, SEXP shapeSEXP, SEXP scaleSEXP, SEXP value1SEXP, SEXP value2SEXP, SEXP value3SEXP, SEXP threshold1SEXP, SEXP threshold2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type calendar_time(calendar_timeSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type tinf(tinfSEXP);
-    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
-    Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
-    Rcpp::traits::input_parameter< double >::type value1(value1SEXP);
-    Rcpp::traits::input_parameter< double >::type value2(value2SEXP);
-    Rcpp::traits::input_parameter< double >::type value3(value3SEXP);
-    Rcpp::traits::input_parameter< double >::type threshold1(threshold1SEXP);
-    Rcpp::traits::input_parameter< double >::type threshold2(threshold2SEXP);
-    rcpp_result_gen = Rcpp::wrap(integral_values_cpp(calendar_time, tinf, shape, scale, value1, value2, value3, threshold1, threshold2));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -234,12 +151,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_TransPhylo_log_sum_exp", (DL_FUNC) &_TransPhylo_log_sum_exp, 2},
     {"_TransPhylo_log_subtract_exp", (DL_FUNC) &_TransPhylo_log_subtract_exp, 2},
     {"_TransPhylo_log_sum_exp_vec", (DL_FUNC) &_TransPhylo_log_sum_exp_vec, 1},
-    {"_TransPhylo_cutPi", (DL_FUNC) &_TransPhylo_cutPi, 5},
     {"_TransPhylo_roundToPrecision", (DL_FUNC) &_TransPhylo_roundToPrecision, 2},
-    {"_TransPhylo_step_function_3", (DL_FUNC) &_TransPhylo_step_function_3, 6},
-    {"_TransPhylo_Dgamma", (DL_FUNC) &_TransPhylo_Dgamma, 4},
-    {"_TransPhylo_integral_function", (DL_FUNC) &_TransPhylo_integral_function, 9},
-    {"_TransPhylo_integral_values_cpp", (DL_FUNC) &_TransPhylo_integral_values_cpp, 9},
     {"_TransPhylo_wbar", (DL_FUNC) &_TransPhylo_wbar, 14},
     {"_TransPhylo_probTTree", (DL_FUNC) &_TransPhylo_probTTree, 14},
     {NULL, NULL, 0}

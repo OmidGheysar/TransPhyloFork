@@ -156,90 +156,11 @@ double alpha(int d, double p, double r,double wbar_tinf)
   return(log(toret));
 }
 
-
-
-// here is my code to Tp ---------------------------------------------------------------------------------
-// Define the step function
-// [[Rcpp::export]]
-NumericVector cutPi(NumericVector pi, double initialDate, double infectionDate, double delta, int n) {
-  int initialIndex = std::round((infectionDate - initialDate) / delta);
-  
-  // If initialIndex is negative or exceeds the size of pi, return an empty vector
-  if (initialIndex < 0 || initialIndex >= pi.size())
-    return NumericVector();
-  
-  int endIndex = initialIndex + n - 1;
-  
-  // If endIndex exceeds the size of pi, set it to the last index of pi
-  if (endIndex >= pi.size())
-    endIndex = pi.size() - 1;
-  
-  NumericVector cut(pi.begin() + initialIndex, pi.begin() + endIndex + 1);
-  return cut;
-}
-
-
 // [[Rcpp::export]]
 double roundToPrecision(double value, double precision) {
   double roundedValue = round(value / precision) * precision;
   return roundedValue;
 }
-
-
-// [[Rcpp::export]]
-double step_function_3(double x, double threshold1, double threshold2, double value1, double value2, double value3) {
-  double y;
-  if (x < threshold1) {
-    y = value1;
-  } else if (x < threshold2) {
-    y = value2;
-  } else {
-    y = value3;
-  }
-  return y;
-}
-
-// Define the gamma function
-// [[Rcpp::export]]
-double Dgamma(double calendar_time, double shape, double scale, double tinf) {
-  return R::dgamma( calendar_time-tinf, shape, scale, false);
-}
-
-// Define the integral function using Rcpp
-// [[Rcpp::export]]
-double integral_function(NumericVector calendar_time, double tinf, double shape, double scale, double value1, double value2, double value3, double threshold1, double threshold2) {
-  int n = calendar_time.size();
-  NumericVector y(n);
-
-  for (int i = 1; i < n; i++) {
-    y[i] = Dgamma(calendar_time[i], shape, scale, tinf) * step_function_3(calendar_time[i], threshold1, threshold2, value1, value2, value3);
-  }
-
-  double sum = 0.0;
-  for (int i = 1; i < n; i++) {
-    double dx = calendar_time[i] - calendar_time[i-1];
-    double area = (y[i] + y[i-1]) * dx / 2.0;
-    sum += area;
-  }
-
-  return sum;
-}
-
-// Define the integral function using Rcpp
-// [[Rcpp::export]]
-NumericVector integral_values_cpp(NumericVector calendar_time, NumericVector tinf, double shape, double scale, double value1, double value2, double value3, double threshold1, double threshold2) {
-  int n_infections = tinf.size();
-  NumericVector integral_values(n_infections);
-
-  for (int i = 0; i < n_infections; i++) {
-    double t = tinf[i];
-    integral_values[i] = integral_function(calendar_time, t, shape, scale, value1, value2, value3, threshold1, threshold2);
-  }
-
-  return integral_values;
-}
-
-// end of my code to Tp ----------------------------------------------------------------------------------
 
 // [[Rcpp::export]]
 NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double pi, double shGen, double scGen, double shSam, double scSam, double delta_t, int isTp, NumericVector time_data, NumericVector prob_data, double dateInitial)
@@ -257,31 +178,7 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
     // Rprintf("pi2[20] for Tp: %f\n", pi2[20]);
   }
 // Here is my Code to Tp ----------------------------------------------------------------------------------
-  // if(isTp==0){
-  //   // NumericVector calendar(n);
-  //   // for(int i=0; i<n; ++i)
-  //   //   calendar [i] = tinf + i*delta_t;
-  //   // double value1 = 0.2;
-  //   // double value2 = 0.8;
-  //   // double value3 = 0.3;
-  //   // double threshold1 = 2006 ;
-  //   // double threshold2 = 2007;
-  //   // pi2 =  integral_values_cpp(calendar, calendar, shSam, scSam, value1, value2, value3, threshold1, threshold2);
-  //   // pi2 = cutPi(Pi, dateInitial, tinf, delta_t, n);
-  //   // pi2 = pi;
-  //   for (int i=0; i<n; ++i)
-  //     pi2[i] = grid[i];
-  //   if (n >= 0 && n <= 100) {
-  //     pi2 = rep(0.9, n);
-  //   } else if (n > 100 && n <= 200) {
-  //     pi2 = rep(0.1, n);
-  //   } else if (n > 200) {
-  //     pi2 = rep(0.9, n);
-  //   } else {
-  //     // Handle other cases if needed
-  //     Rcpp::stop("Invalid value of n.");
-  //   }
-    
+
     if (isTp == 0) {
       double value1 = time_data[0];
       double value2 = time_data[1];
@@ -290,74 +187,64 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
       double threshold2 =  2006;
       // Rprintf("dateT: %f\n", dateT);
       Rprintf("tinf: %f\n", tinf);
-      // for (int i = 0; i < n; ++i) {
-      //   double g_value = grid[i]; // Replace with the actual calculation of g[i]
-      //    // Rprintf("grid: %f\n", grid[i]);
-      //    // Rprintf("dateT: %f\n", dateT);
-      //    // Rprintf("tinf: %f\n", tinf);
-      //   
-      //   if (g_value <= threshold1) {
-      //     pi2[i] = value1;
-      //     //Rprintf("pi2: %f\n", value1);
-      //   } else if (g_value > threshold1 && g_value <= threshold2) {
-      //     pi2[i] = value2;
-      //     //Rprintf("pi2: %f\n", value2);
-      //   } else {
-      //     pi2[i] = value3;
-      //     //Rprintf("pi2: %f\n", value3);
-      //   }
-      // }
     }
     
-    // for(int i=0; i<n; ++i)
-    //   pi2[i] = grid[i];
-    
-    // Rprintf("dateIntial: %f\n", dateInitial);
-    // Rprintf("tinf: %f\n", tinf);
-    // Rprintf("pi2[10]: %f\n", pi2[10]);
-    // Rprintf("pi2[120]: %f\n", pi2[120]);
-    // Rprintf("shape: %f\n", shSam);
-    // Rprintf("scale: %f\n", scSam);
-    // Rprintf("calendar1: %f\n", calendar[1]);
-    // Rprintf("calendar2: %f\n", calendar[2]);
-    // Rprintf("calendar100: %f\n", calendar[100]);
-    // Rprintf("delta: %f\n", delta_t);
-    // Rprintf("Value: %d\n", n);
-    // Rprintf("isTp: %d\n", isTp);
-    // Rprintf("dateT-tinf: %f\n",  std::round((dateT-tinf)/delta_t));
   
   if(isTp==2){
-    // double value1 = time_data[0];
-    // double value2 = time_data[1];
-    // double value3 = time_data[2];
-    // double threshold1 =  time_data[3];
-    // double threshold2 =  time_data[4];
     for (int i = 0; i < n; ++i) {
       double g_value = grid[i]; // Replace with the actual calculation of g[i]
       Rprintf("grid[i]: %f\n", grid[i]);
-      
-      // if (g_value <= threshold1) {
-      //   pi2[i] = value1;
-      //   // Rprintf("pi2: %f\n", value1);
-      // } else if (g_value > threshold1 && g_value <= threshold2) {
-      //   pi2[i] = value2;
-      //   // Rprintf("pi2: %f\n", value2);
-      // } else {
-      //   pi2[i] = value3;
-      //   // Rprintf("pi2: %f\n", value3);
-      // }
     }
     
   }
   
-  if(isTp==3){
-    Rprintf("time_data[0]: %f\n", time_data[0]);
-    Rprintf("time_data[1]: %f\n", time_data[1]);
-    Rprintf("time_data[2]: %f\n", time_data[2]);
+  // if(isTp==3){
+  //   Rprintf("time_data[0]: %f\n", time_data[0]);
+  //   Rprintf("time_data[1]: %f\n", time_data[1]);
+  //   Rprintf("time_data[2]: %f\n", time_data[2]);
+  //   
+  //   Rprintf("prob_data[0]: %f\n", prob_data[0]);
+  //   Rprintf("prob_data[1]: %f\n", prob_data[1]);
+  //   Rprintf("prob_data[2]: %f\n", prob_data[2]);
+  // }
+  
+  if(isTp==4){
+    // int n = std::round((dateT-tinf)/delta_t);
+    // NumericVector grid(n);
+    // NumericVector pi2(n);
+    // for(int i=0; i<n; ++i) { // use the left point of each subinterval
+    //   grid[i] = dateT-n*delta_t+i*delta_t;
+    // }
+    // 
+    // Find the index where time_data matches the first element of grid
+    int matchingIndex = -1;
+    for(int i=0; i<time_data.size(); ++i) {
+      if(time_data[i] == grid[0]) {
+        matchingIndex = i;
+        break;
+      }
+    }
     
-    Rprintf("prob_data[0]: %f\n", prob_data[0]);
-    Rprintf("prob_data[1]: %f\n", prob_data[1]);
-    Rprintf("prob_data[2]: %f\n", prob_data[2]);
+    // Check if a matching index was found
+    if(matchingIndex != -1) {
+      // Assign values from prob_data to pi2 starting from the found index
+      for(int i = matchingIndex; i < time_data.size(); ++i) {
+        int pi2Index = i - matchingIndex;
+        if(pi2Index < n) { // Ensure we don't go out of bounds for pi2
+          pi2[pi2Index] = prob_data[i];
+          Rprintf("pi2[pi2Index]: %f\n", pi2[pi2Index]);
+        } else {
+          // If there's no corresponding index in pi2 for the prob_data, break the loop
+          break;
+        }
+      }
+    } else {
+      Rprintf("there is no match between these two sets");
+      // Handle the case where no matching index is found
+      // For example, you might want to set pi2 to some default values or throw an error
+    }
+    
+    // ... rest of your code ...
   }
 // end of my code to Tp -----------------------------------------------------------------------------------
 
