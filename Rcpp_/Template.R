@@ -1,114 +1,104 @@
 library(TransPhylo)
-set.seed(0)
+set.seed(4)
 neg=100/365
-off.r=5
+off.r=1.1
 w.shape=10
 w.scale=0.1
-pi=0.25
+pi=0.8
 simu <- simulateOutbreak(neg=neg,pi=pi,off.r=off.r,w.shape=w.shape,
-                         w.scale=w.scale,dateStartOutbreak=2005,dateT=2008)
+                         w.scale=w.scale,dateStartOutbreak=2018,dateT=2024)
+plot(simu)
 
 ptree<-extractPTree(simu)
-value1 <- 0.1
-value2 <- 0.9
-value3 <- 0.1
-threshold1 <-  2000.0;
-threshold2 <-  2000 + 0.6;
-
-
-ptree<-extractPTree(simu)
-value1 <- 0.1
-value2 <- 0.9
-value3 <- 0.1
-threshold1 <-  2000.0;
-threshold2 <-  2000 + 0.6;
-
-
-# res<-inferTTree(ptree,mcmcIterations=10000,w.shape=w.shape,w.scale=w.scale,dateT=2020, delta_t=0.01, isTp = 1,
-#                 Pi = c(value1,value2,value3,threshold1,threshold2), updatePi = FALSE, updateNeg =FALSE)
-
-res<-inferTTree(ptree,mcmcIterations=100,w.shape=w.shape,w.scale=w.scale,dateT=2020, delta_t=0.01, isTp = 1,
-                Pi = c(value1,value2,value3,threshold1,threshold2), updatePi = FALSE, updateNeg =FALSE)
-
-
-# Define your time points and sampling probabilities
-time_points = c(1, 2) # replace time1, time2 with actual time values
-sampling_probs = c(.5, .3) # replace prob1, prob2 with actual sampling probabilities
 
 
 
-# Combine them into a list with named elements
-Pi_values <- list(
-  time = time_points,
-  probs = sampling_probs
-)
-
-# Now you can access time and probs with Pi_values$time and Pi_values$probs
-# ...
-
-# Assuming you need to pass them as a concatenated vector to the Pi argument
-Pi_argument <- c(Pi_values$time, Pi_values$probs, Pi_values$threshold1, Pi_values$threshold2)
-
-# Then use this vector in your function call
-res <- inferTTree(ptree, mcmcIterations=100, w.shape=w.shape, w.scale=w.scale, dateT=2011, 
-                  delta_t=0.01, isTp = 0, time_data = c(2,3,66), prob_data = c(20,30,666), updatePi = FALSE, updateNeg =FALSE)
-
-# check tinf and date T the time interval will between these two values the grid 
-# I put function that shows the value of tinf it can be checked before inference 
-
-
-res <- inferTTree(ptree, mcmcIterations=100, w.shape=w.shape, w.scale=w.scale, dateT=2011.303, 
+res <- inferTTree(ptree, mcmcIterations=1000, w.shape=w.shape, w.scale=w.scale, dateT=2025, 
                   delta_t=0.01, isTp = 2, time_data = c(2,3,66), prob_data = c(20,30,666), updatePi = FALSE, updateNeg =FALSE)
 
 
 
-res <- inferTTree(ptree, mcmcIterations=100, w.shape=w.shape, w.scale=w.scale, dateT=2011, 
+res <- inferTTree(ptree, mcmcIterations=100, w.shape=w.shape, w.scale=w.scale, dateT=2025, 
                   delta_t=0.01, isTp = 3, time_data = c(2,3,66), prob_data = c(20,30,666), updatePi = FALSE, updateNeg =FALSE)
 
 
-create_grid_and_values <- function(dateT, tinf, delta_t) {
-  n <- round((dateT - tinf) / delta_t)
-  grid <- seq(from = tinf, by = delta_t, length.out = n)
-  values <- rep(0.7, length(grid))
+
+
+
+
+create_grid_and_values <- function(start_year, end_year, delta_t, default_value, specific_values) {
+  # Create the grid of years with step size delta_t
+  grid <- seq(from = start_year, to = end_year, by = delta_t)
+  
+  # Initialize values with the default value
+  values <- rep(default_value, length(grid))
+  
+  # Set specific values for the years provided in the specific_values list
+  for(i in seq_along(grid)) {
+    # Find the year part of the grid value
+    year_part <- floor(grid[i])
+    
+    # Check if this year part has a specific value
+    if(as.character(year_part) %in% names(specific_values)) {
+      values[i] <- specific_values[[as.character(year_part)]]
+    }
+  }
+  
   return(list(grid = grid, values = values))
 }
 
+# ... (rest of your code)
+
+# Define specific values from the table
+specific_values <- list(`2019` = 0.8, `2020` = 0.8, `2021` = 0.75, `2022` = 0.7, `2023` = 0.33)
+
 # Example usage:
-dateT <- 2011  # Example current date in numeric format
-tinf <- 2000               # Example start date, 10 days before dateT
-delta_t <- 0.01                   # Example interval between grid points
+start_year <- 2010  # Starting year
+end_year <- 2025    # Ending year
+delta_t <- 0.01        # Step size (1 year)
+default_value <- 0.05 # Default value for years outside 2019-2023
 
 # Generate the grid and values
-result <- create_grid_and_values(dateT, tinf, delta_t)
+result <- create_grid_and_values(start_year, end_year, delta_t, default_value, specific_values)
 
 # The grid array
 grid <- result$grid
 print(grid)
 
-# The values array with 0.7
+# The values array
 values <- result$values
 print(values)
 
 
 
-res <- inferTTree(ptree, mcmcIterations=1000, w.shape=w.shape, w.scale=w.scale, dateT=2011, 
-                  delta_t=0.01, isTp = 4, time_data = result$grid, prob_data = result$values, updatePi = FALSE, updateNeg =FALSE)
-# Plotting the grid against the constant values
-plot(grid, values, type = 'l', col = 'blue', xlab = 'Grid', ylab = 'Values', main = 'Grid vs. Constant Values')
-# this is the plot for this section
+
+
+# Plot the values with specified type and color
+plot(grid, values, type = 'l', col = 'blue', xlab = 'Grid', ylab = 'Values', main = 'Grid vs. Constant Values', xaxt='n', ylim=c(min(values) - 0.1, max(values) + 0.1))
+
+# Add x-axis ticks for every year
+axis(1, at=seq(floor(min(grid)), ceiling(max(grid)), by=1), las=2)
+
+# Add grid lines for y-axis
+abline(h=seq(floor(min(values)), ceiling(max(values)), by=0.1), col="gray", lty="dotted")
+abline(v=seq(floor(min(grid)), ceiling(max(grid)), by=1), col="gray", lty="dotted")
 
 
 
 
+res_TP <- inferTTree(ptree, mcmcIterations=10000, w.shape=w.shape, w.scale=w.scale, dateT=2026, 
+                     delta_t=0.01, isTp = 1, time_data = result$grid, prob_data = result$values, updatePi = FALSE, updateNeg =FALSE)
+
+a=getIncidentCases(res_TP,show.plot = T)
 
 
 
+res_TPS <- inferTTree(ptree, mcmcIterations=10000, w.shape=w.shape, w.scale=w.scale, dateT=2026, 
+                      delta_t=0.01, isTp = 3, time_data = result$grid, prob_data = result$values, updatePi = FALSE, updateNeg =FALSE)
 
 
+# plot(medTTree(res)) 
+# get incident in this example
 
-
-
-
-
-
+a=getIncidentCases(res_TPS,show.plot = T)
 
