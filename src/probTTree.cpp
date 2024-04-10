@@ -178,44 +178,13 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
     // Rprintf("pi2[20] for Tp: %f\n", pi2[20]);
   }
 // Here is my Code to Tp ----------------------------------------------------------------------------------
-
-    if (isTp == 0) {
-      double value1 = time_data[0];
-      double value2 = time_data[1];
-      double value3 = time_data[2];
-      double threshold1 =  2005.2;
-      double threshold2 =  2006;
-      // Rprintf("dateT: %f\n", dateT);
-      Rprintf("tinf: %f\n", tinf);
-    }
-    
   
   if(isTp==2){
-    for (int i = 0; i < n; ++i) {
-      double g_value = grid[i]; // Replace with the actual calculation of g[i]
-      Rprintf("grid[i]: %f\n", grid[i]);
-    }
+    Rprintf("tinf: %f\n", tinf);
     
   }
   
-  // if(isTp==3){
-  //   Rprintf("time_data[0]: %f\n", time_data[0]);
-  //   Rprintf("time_data[1]: %f\n", time_data[1]);
-  //   Rprintf("time_data[2]: %f\n", time_data[2]);
-  //   
-  //   Rprintf("prob_data[0]: %f\n", prob_data[0]);
-  //   Rprintf("prob_data[1]: %f\n", prob_data[1]);
-  //   Rprintf("prob_data[2]: %f\n", prob_data[2]);
-  // }
-  
-  if(isTp==4){
-    // int n = std::round((dateT-tinf)/delta_t);
-    // NumericVector grid(n);
-    // NumericVector pi2(n);
-    // for(int i=0; i<n; ++i) { // use the left point of each subinterval
-    //   grid[i] = dateT-n*delta_t+i*delta_t;
-    // }
-    // 
+  if(isTp==3){
     // Find the index where time_data matches the first element of grid
     int matchingIndex = -1;
     for(int i=0; i<time_data.size(); ++i) {
@@ -232,7 +201,7 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
         int pi2Index = i - matchingIndex;
         if(pi2Index < n) { // Ensure we don't go out of bounds for pi2
           pi2[pi2Index] = prob_data[i];
-          Rprintf("pi2[pi2Index]: %f\n", pi2[pi2Index]);
+          // Rprintf("pi2[pi2Index]: %f\n", pi2[pi2Index]);
         } else {
           // If there's no corresponding index in pi2 for the prob_data, break the loop
           break;
