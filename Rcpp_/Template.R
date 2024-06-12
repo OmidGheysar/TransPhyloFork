@@ -5,6 +5,7 @@ off.r=1.1
 w.shape=10
 w.scale=0.1
 pi=0.8
+set.seed(42)
 simu <- simulateOutbreak(neg=neg,pi=pi,off.r=off.r,w.shape=w.shape,
                          w.scale=w.scale,dateStartOutbreak=2018,dateT=2024)
 plot(simu)
@@ -84,21 +85,60 @@ abline(h=seq(floor(min(values)), ceiling(max(values)), by=0.1), col="gray", lty=
 abline(v=seq(floor(min(grid)), ceiling(max(grid)), by=1), col="gray", lty="dotted")
 
 
+# 1) when you feed the time tinf the data_time first entry should be 
+#    earlier than the tinf chosen for the root of tree achievable through 
+#    is TP=2 
+# 2) DateT is very essential the all of other slicing fo time will be according to
+#    DateT so the idea is to pick a floor rounding of the dateLastSample 
+# 3) BE mindful about delat_t=0.5
 
-
-res_TP <- inferTTree(ptree, mcmcIterations=10000, w.shape=w.shape, w.scale=w.scale, dateT=2026, 
+res_TP <- inferTTree(ptree, mcmcIterations=1000, w.shape=w.shape, w.scale=w.scale, dateT=2026, 
                      delta_t=0.01, isTp = 1, time_data = result$grid, prob_data = result$values, updatePi = FALSE, updateNeg =FALSE)
 
 a=getIncidentCases(res_TP,show.plot = T)
 
 
 
-res_TPS <- inferTTree(ptree, mcmcIterations=10000, w.shape=w.shape, w.scale=w.scale, dateT=2026, 
+res_TPS <- inferTTree(ptree, mcmcIterations=1000, w.shape=w.shape, w.scale=w.scale, dateT=2026, 
                       delta_t=0.01, isTp = 3, time_data = result$grid, prob_data = result$values, updatePi = FALSE, updateNeg =FALSE)
 
 
 # plot(medTTree(res)) 
-# get incident in this example
+# get incident in this example!
 
 a=getIncidentCases(res_TPS,show.plot = T)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
