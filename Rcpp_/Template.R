@@ -1,3 +1,4 @@
+# Template
 library(TransPhylo)
 set.seed(4)
 neg=100/365
