@@ -163,8 +163,9 @@ double roundToPrecision(double value, double precision) {
 }
 
 // [[Rcpp::export]]
-NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double pi, double shGen, double scGen, double shSam, double scSam, double delta_t, int isTp, NumericVector time_data, NumericVector prob_data, double dateInitial)
+NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double pi, double shGen, double scGen, double shSam, double scSam, double delta_t, int isTp, NumericVector time_data, NumericVector prob_data)
 {
+  
   int n = std::round((dateT-tinf)/delta_t);
   NumericVector grid(n);
   NumericVector pi2(n);
@@ -178,12 +179,12 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
     // Rprintf("pi2[20] for Tp: %f\n", pi2[20]);
   }
 // Here is my Code to Tp ----------------------------------------------------------------------------------
-  
+
   if(isTp==2){
     Rprintf("tinf: %f\n", tinf);
-    
+
   }
-  
+
   if(isTp==3){
     // Find the index where time_data matches the first element of grid
     int matchingIndex = -1;
@@ -193,7 +194,7 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
         break;
       }
     }
-    
+
     // Check if a matching index was found
     if(matchingIndex != -1) {
       // Assign values from prob_data to pi2 starting from the found index
@@ -212,8 +213,9 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
       // Handle the case where no matching index is found
       // For example, you might want to set pi2 to some default values or throw an error
     }
-    
+
     // ... rest of your code ...
+    
   }
 // end of my code to Tp -----------------------------------------------------------------------------------
 
@@ -235,6 +237,44 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
     out[i-1] = std::min(1.0,F[i-1] + sumPrev*delta_t);
   }
   return log(out);
+
+
+}
+
+
+// [[Rcpp::export]]
+NumericVector Ptime(NumericVector ttree_col0, NumericVector time_data, NumericVector prob_data) {
+  int n = ttree_col0.size();
+  NumericVector pTime(n);
+  
+  // Ensure time_data is sorted (we assume it is always sorted as per the problem statement)
+  // For each element in ttree_col0
+  for (int i = 0; i < n; ++i) {
+    double t = ttree_col0[i];
+    
+    // Use binary search to find the closest value
+    auto it = std::lower_bound(time_data.begin(), time_data.end(), t);
+    
+    int closest_index;
+    if (it == time_data.end()) {
+      closest_index = time_data.size() - 1; // If t is greater than any element in time_data
+    } else if (it == time_data.begin()) {
+      closest_index = 0; // If t is less than any element in time_data
+    } else {
+      int idx = it - time_data.begin();
+      // Check the closest one
+      if (std::abs(time_data[idx] - t) < std::abs(time_data[idx - 1] - t)) {
+        closest_index = idx;
+      } else {
+        closest_index = idx - 1;
+      }
+    }
+    
+    // Pick the value from prob_data at the closest index
+    pTime[i] = prob_data[closest_index];
+  }
+  
+  return pTime;
 }
 
 //' Calculates the log-probability of a transmission tree
@@ -253,7 +293,8 @@ NumericVector wbar(double tinf, double dateT, double rOff, double pOff, double p
 // [[Rcpp::export]]
 double probTTree(NumericMatrix ttree, double rOff, double pOff, double pi,
                  double shGen, double scGen, double shSam, double scSam,
-                 double dateT, double delta_t=0.01, int isTp = 0, NumericVector time_data = NumericVector::create(0.5), NumericVector prob_data = NumericVector::create(0.5), double dateInitial = 0){
+                 double dateT, double delta_t=0.01, int isTp = 1, NumericVector time_data = NumericVector::create(0.5), NumericVector prob_data = NumericVector::create(0.5))
+{
   // Rprintf("Pi for Tp: %f\n", Pi[0]);
   int numCases = ttree.nrow();
 
@@ -284,33 +325,91 @@ double probTTree(NumericMatrix ttree, double rOff, double pOff, double pi,
   }
   else{
     // Ongoing outbreak -- observation ends at finite dateT
-    NumericVector lprobSam = log(pi)+pgamma(dateT-ttree(_,0),shSam,scSam,1,1);
-    for(int i=0; i<lprobSam.size(); ++i){
-      lprobSam[i] = log_subtract_exp(0.0,lprobSam[i]);
-    }
-    NumericVector lsstatus = ifelse(is_na(ttree(_,1)), lprobSam, log(pi)+dgamma(ttree(_,1)-ttree(_,0),shSam,scSam,1));
-    std::map<int, std::vector<int> > infMap; // Map from infector to infected
-    std::vector<std::vector<int> > progeny(numCases);
-    for(int i=0; i<numCases; ++i){
-      if(ttree(i,2) == 0) continue; // Found root node i
-
-      progeny[ttree(i,2)-1].push_back(i); // C++ index starts from 0
-      infMap[ttree(i,2)-1] = progeny[ttree(i,2)-1];
-    }
-    double accum = 0.0;
-    double tinfmin = min(ttree(_,0));
-    tinfmin = roundToPrecision(tinfmin, delta_t);
-    NumericVector wbar0 = wbar(tinfmin, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data, dateInitial);
-
-    double gridStart = dateT-wbar0.size()*delta_t;
-
-    for(int i=0; i<numCases; ++i){
-
-      accum += alpha(progeny[i].size(), pOff, rOff,wbar0[std::min(wbar0.size()-1.0,std::round((ttree(i,0) - gridStart)/delta_t))]);
-      for(unsigned int j=0; j<progeny[i].size(); ++j){
-        accum += (R::dgamma(ttree(progeny[i][j],0)-ttree(i,0), shGen, scGen, 1) - R::pgamma(dateT-ttree(i,0), shGen, scGen, 1, 1));
+    // NumericVector lprobSam = log(pi)+pgamma(dateT-ttree(_,0),shSam,scSam,1,1);
+    if(isTp = 3){
+      NumericVector turncWS = pgamma(dateT-ttree(_,0),shSam,scSam,1,1);
+      NumericVector PtimeOut = Ptime(ttree(_,0),time_data, prob_data);
+      NumericVector lprobSam = log(PtimeOut);
+      for(int i=0; i<lprobSam.size(); ++i){
+        lprobSam[i] = log_subtract_exp(0.0,lprobSam[i]);
       }
+      // NumericVector lsstatus = ifelse(is_na(ttree(_,1)), lprobSam, log(pi)+dgamma(ttree(_,1)-ttree(_,0),shSam,scSam,1));
+      NumericVector lsstatus = ifelse(is_na(ttree(_,1)), lprobSam, log(PtimeOut)+dgamma(ttree(_,1)-ttree(_,0),shSam,scSam,1) - turncWS);
+      std::map<int, std::vector<int> > infMap; // Map from infector to infected
+      std::vector<std::vector<int> > progeny(numCases);
+      for(int i=0; i<numCases; ++i){
+        if(ttree(i,2) == 0) continue; // Found root node i
+        
+        progeny[ttree(i,2)-1].push_back(i); // C++ index starts from 0
+        infMap[ttree(i,2)-1] = progeny[ttree(i,2)-1];
+      }
+      double accum = 0.0;
+      double tinfmin = min(ttree(_,0));
+      tinfmin = roundToPrecision(tinfmin, delta_t);
+      NumericVector wbar0 = wbar(tinfmin, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data);
+      
+      double gridStart = dateT-wbar0.size()*delta_t;
+      
+      for(int i=0; i<numCases; ++i){
+        
+        accum += alpha(progeny[i].size(), pOff, rOff,wbar0[std::min(wbar0.size()-1.0,std::round((ttree(i,0) - gridStart)/delta_t))]);
+        for(unsigned int j=0; j<progeny[i].size(); ++j){
+          // accum += R::dgamma(ttree(progeny[i][j],0)-ttree(i,0), shGen, scGen, 1);
+          accum += (R::dgamma(ttree(progeny[i][j],0)-ttree(i,0), shGen, scGen, 1) - R::pgamma(dateT-ttree(i,0), shGen, scGen, 1, 1));
+          // accum += (R::dgamma(ttree(progeny[i][j],0)-ttree(i,0), shGen, scGen, 1));
+        }
+      }
+      return sum(lsstatus) + accum;
+    }else {
+      // Ongoing outbreak -- observation ends at finite dateT
+      NumericVector lprobSam = log(pi)+pgamma(dateT-ttree(_,0),shSam,scSam,1,1);
+      for(int i=0; i<lprobSam.size(); ++i){
+        lprobSam[i] = log_subtract_exp(0.0,lprobSam[i]);
+      }
+      NumericVector lsstatus = ifelse(is_na(ttree(_,1)), lprobSam, log(pi)+dgamma(ttree(_,1)-ttree(_,0),shSam,scSam,1));
+      std::map<int, std::vector<int> > infMap; // Map from infector to infected
+      std::vector<std::vector<int> > progeny(numCases);
+      for(int i=0; i<numCases; ++i){
+        if(ttree(i,2) == 0) continue; // Found root node i 
+        
+        progeny[ttree(i,2)-1].push_back(i); // C++ index starts from 0
+        infMap[ttree(i,2)-1] = progeny[ttree(i,2)-1]; 
+      }
+      double accum = 0.0;
+      double tinfmin = min(ttree(_,0));
+      NumericVector wbar0 = wbar(tinfmin, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data);
+      
+      double gridStart = dateT-wbar0.size()*delta_t;
+      
+      for(int i=0; i<numCases; ++i){
+        
+        accum += alpha(progeny[i].size(), pOff, rOff,wbar0[std::min(wbar0.size()-1.0,std::round((ttree(i,0) - gridStart)/delta_t))]);
+        for(unsigned int j=0; j<progeny[i].size(); ++j){
+          accum += R::dgamma(ttree(progeny[i][j],0)-ttree(i,0), shGen, scGen, 1);
+          // accum += (R::dgamma(ttree(progeny[i][j],0)-ttree(i,0), shGen, scGen, 1)- R::pgamma(dateT-ttree(i,0), shGen, scGen, 1, 1));
+        }
+      }
+      return sum(lsstatus) + accum;
     }
-    return sum(lsstatus) + accum;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
