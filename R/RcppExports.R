@@ -19,6 +19,9 @@ coalescent <- function(leaves, nodes, alpha) {
     .Call('_TransPhylo_coalescent', PACKAGE = 'TransPhylo', leaves, nodes, alpha)
 }
 
+#' Calculates the log-probability of a transmission tree
+NULL
+
 log_sum_exp <- function(u, v) {
     .Call('_TransPhylo_log_sum_exp', PACKAGE = 'TransPhylo', u, v)
 }
@@ -35,24 +38,19 @@ roundToPrecision <- function(value, precision) {
     .Call('_TransPhylo_roundToPrecision', PACKAGE = 'TransPhylo', value, precision)
 }
 
-wbar <- function(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data, dateInitial) {
-    .Call('_TransPhylo_wbar', PACKAGE = 'TransPhylo', tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data, dateInitial)
+calculate_integral <- function(tinput, change_point, alpha, beta, p1, p2, Tend) {
+    .Call('_TransPhylo_calculate_integral', PACKAGE = 'TransPhylo', tinput, change_point, alpha, beta, p1, p2, Tend)
 }
 
-#' Calculates the log-probability of a transmission tree
-#' @param ttree Transmission tree
-#' @param rOff First parameter of the negative binomial distribution for offspring number
-#' @param pOff Second parameter of the negative binomial distribution for offspring number
-#' @param pi probability of sampling an infected individual
-#' @param shGen Shape parameter of the Gamma probability density function representing the generation time
-#' @param scGen Scale parameter of the Gamma probability density function representing the generation time
-#' @param shSam Shape parameter of the Gamma probability density function representing the sampling time
-#' @param scSam Scale parameter of the Gamma probability density function representing the sampling time
-#' @param dateT Date when process stops (this can be Inf for fully simulated outbreaks)
-#' @param delta_t Grid precision
-#' @return Probability of the transmission tree
-#' @export
-probTTree <- function(ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t = 0.01, isTp = 0L, time_data = as.numeric( c(0.5)), prob_data = as.numeric( c(0.5)), dateInitial = 0) {
-    .Call('_TransPhylo_probTTree', PACKAGE = 'TransPhylo', ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t, isTp, time_data, prob_data, dateInitial)
+wbar <- function(tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data) {
+    .Call('_TransPhylo_wbar', PACKAGE = 'TransPhylo', tinf, dateT, rOff, pOff, pi, shGen, scGen, shSam, scSam, delta_t, isTp, time_data, prob_data)
+}
+
+Ptime <- function(ttree_col0, time_data, prob_data) {
+    .Call('_TransPhylo_Ptime', PACKAGE = 'TransPhylo', ttree_col0, time_data, prob_data)
+}
+
+probTTree <- function(ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t = 0.01, isTp = 1L, time_data = as.numeric( c(0.5)), prob_data = as.numeric( c(0.5))) {
+    .Call('_TransPhylo_probTTree', PACKAGE = 'TransPhylo', ttree, rOff, pOff, pi, shGen, scGen, shSam, scSam, dateT, delta_t, isTp, time_data, prob_data)
 }
 
