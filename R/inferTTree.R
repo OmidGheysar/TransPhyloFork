@@ -35,8 +35,8 @@
 inferTTree = function(ptree, w.shape=2, w.scale=1, ws.shape=NA, ws.scale=NA,
                       w.mean=NA,w.std=NA,ws.mean=NA,ws.std=NA,mcmcIterations=1000,
                       thinning=1, startNeg=100/365, startOff.r=1, startOff.p=0.5, startPi=0.5, updateNeg=TRUE,
-                      updateOff.r=TRUE, updateOff.p=FALSE, updatePi=FALSE, qNeg=NA, qOff.r=NA, qOff.p=NA, qPi=NA,
-                      startCTree=NA, updateTTree=TRUE, optiStart=2, dateT=Inf,delta_t=NA,verbose=F, isTp = 0, time_data = c(0.5), prob_data = c(0.5), dateInitial = 0) {
+                      updateOff.r=TRUE, updateOff.p=FALSE, updatePi=TRUE, qNeg=NA, qOff.r=NA, qOff.p=NA, qPi=NA,
+                      startCTree=NA, updateTTree=TRUE, optiStart=2, dateT=Inf,delta_t=NA,verbose=F, isTp = 1, time_data = c(0.5), prob_data = c(0.5)) {
 
   ptree$ptree[,1]=ptree$ptree[,1]+runif(nrow(ptree$ptree))*1e-10#Ensure that all leaves have unique times
   if (dateT<dateLastSample(ptree)) stop('The parameter dateT cannot be smaller than the date of last sample')
@@ -63,7 +63,7 @@ inferTTree = function(ptree, w.shape=2, w.scale=1, ws.shape=NA, ws.scale=NA,
   else ctree<-startCTree
   ttree <- extractTTree(ctree)
   record <- vector('list',mcmcIterations/thinning)
-  pTTree <- probTTree(ttree$ttree,off.r,off.p,pi,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp ,time_data, prob_data, dateInitial )
+  pTTree <- probTTree(ttree$ttree,off.r,off.p,pi,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp ,time_data, prob_data )
   pPTree <- probPTreeGivenTTree(ctree$ctree,neg)
   if (verbose==F) pb <- utils::txtProgressBar(min=0,max=mcmcIterations,style = 3)
 
@@ -94,7 +94,7 @@ inferTTree = function(ptree, w.shape=2, w.scale=1, ws.shape=NA, ws.scale=NA,
     ctree2 <- list(ctree=prop$tree,nam=ctree$nam)
     class(ctree2)<-'ctree'
     ttree2 <- extractTTree(ctree2)
-    pTTree2 <- probTTree(ttree2$ttree,off.r,off.p,pi,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp, time_data, prob_data, dateInitial)
+    pTTree2 <- probTTree(ttree2$ttree,off.r,off.p,pi,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp, time_data, prob_data)
     #pPTree2 <- probPTreeGivenTTree(ctree2$ctree,neg)
     pPTreeDiff <- probPTreeGivenTTree(ctree2$ctree,neg,prop$new)-probPTreeGivenTTree(ctree$ctree,neg,prop$old)
 
@@ -131,7 +131,7 @@ inferTTree = function(ptree, w.shape=2, w.scale=1, ws.shape=NA, ws.scale=NA,
       #Metropolis update for off.r, assuming Exp(1) prior
       off.r2 <- abs(off.r + (runif(1)-0.5)*qOff.r)
       if (verbose) message(sprintf("Proposing off.r update %f->%f",off.r,off.r2))
-      pTTree2 <- probTTree(ttree$ttree,off.r2,off.p,pi,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp, time_data, prob_data, dateInitial)
+      pTTree2 <- probTTree(ttree$ttree,off.r2,off.p,pi,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp, time_data, prob_data)
       if (log(runif(1)) < pTTree2-pTTree-off.r2+off.r)  {off.r <- off.r2;pTTree <- pTTree2}
     }
 
@@ -140,7 +140,7 @@ inferTTree = function(ptree, w.shape=2, w.scale=1, ws.shape=NA, ws.scale=NA,
       off.p2 <- abs(off.p + (runif(1)-0.5)*qOff.p)
       if (off.p2>1) off.p2=2-off.p2
       if (verbose) message(sprintf("Proposing off.p update %f->%f",off.p,off.p2))
-      pTTree2 <- probTTree(ttree$ttree,off.r,off.p2,pi,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp, time_data, prob_data, dateInitial)
+      pTTree2 <- probTTree(ttree$ttree,off.r,off.p2,pi,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp, time_data, prob_data)
       if (log(runif(1)) < pTTree2-pTTree)  {off.p <- off.p2;pTTree <- pTTree2}
     }
 
@@ -149,7 +149,7 @@ inferTTree = function(ptree, w.shape=2, w.scale=1, ws.shape=NA, ws.scale=NA,
       pi2 <- abs(pi + (runif(1)-0.5)*qPi)
       if (pi2>1) pi2=2-pi2
       if (verbose) message(sprintf("Proposing pi update %f->%f",pi,pi2))
-      pTTree2 <- probTTree(ttree$ttree,off.r,off.p,pi2,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp, time_data, prob_data, dateInitial)
+      pTTree2 <- probTTree(ttree$ttree,off.r,off.p,pi2,w.shape,w.scale,ws.shape,ws.scale,dateT,delta_t, isTp, time_data, prob_data)
       if (log(runif(1)) < pTTree2-pTTree)  {pi <- pi2;pTTree <- pTTree2}
     }
 
