@@ -3,14 +3,6 @@
 set.seed(1)
 setwd("C:/Users/Omid/Documents/TransPhyloFork")
 library(TransPhylo)
-# w.shape = 1.3, w.scale = 3.333, ws.shape = 1.1,
-# ws.scale = 2.5
-
-# w.mean= 1.5
-# w.std= 3.333
-# 
-# ws.mean= 1.1
-# ws.std= 2.5
 
 
 w.mean= 1.5
@@ -51,7 +43,10 @@ axis(1, at=seq(floor(min(grid)), ceiling(max(grid)), by=1), las=2)
 abline(h=seq(floor(min(values)), ceiling(max(values)), by=0.1), col="gray", lty="dotted")
 abline(v=seq(floor(min(grid)), ceiling(max(grid)), by=1), col="gray", lty="dotted")
 
-
+# prob_data = c(prob_before_threshold, prob_after_threshold) the proability of sampling before and after the threshold 
+# in the following example the probability of sampling before threshold is 0.05 and after is 0.8
+# time_data = c(threshold) the threshold
+# in the following example the threshold happens at 2019
 res_TP <- inferTTree(ptree_c4007, mcmcIterations=50000,w.mean=w.mean,w.std=w.std,ws.mean=ws.mean,ws.std=ws.std, dateT=2025, 
                      delta_t=0.01, isTp = 1, time_data = c(2019), prob_data = c(0.05, 0.8), updatePi = FALSE, updateNeg =FALSE)
 
@@ -65,10 +60,9 @@ plot(res_TP)
 a_TP=getIncidentCases(res_TP,show.plot = T)
 
 
-# res_TP <- inferTTree(ptree_c4007, mcmcIterations=1000,w.mean=w.mean,w.std=w.std,ws.mean=ws.mean,ws.std=ws.std, dateT=2026, delta_t=0.01, isTp = 2, time_data = result$grid, prob_data = result$values, updatePi = FALSE, updateNeg =FALSE)
 res_TPS <- inferTTree(ptree_c4007, mcmcIterations=50000,w.mean=w.mean,w.std=w.std,ws.mean=ws.mean,
                       ws.std=ws.std, dateT=2025, delta_t=0.01, isTp = 2,time_data = c(2019), prob_data = c(0.05, 0.8), updatePi = FALSE, updateNeg =FALSE)
-#*dateT needs to be the same as the last element in time_data, later is fine
+
 
 mcmc_TPS=convertToCoda(res_TPS)
 effectiveSize(mcmc_TPS)
@@ -83,10 +77,10 @@ a_TPS=getIncidentCases(res_TPS,show.plot = T)
 
 par(mfrow=c(1, 2))
 
-# med1TP = medTTree(res_TP)
-# med1TPS = medTTree(res_TPS)
-# plot(med1TP) 
-# plot(med1TPS) 
+med1TP = medTTree(res_TP)
+med1TPS = medTTree(res_TPS)
+plot(med1TP)
+plot(med1TPS)
 
 In_TP = getIncidentCases(res_TP,show.plot = T)
 In_TPS = getIncidentCases(res_TPS,show.plot = T)
